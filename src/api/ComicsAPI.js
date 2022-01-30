@@ -25,7 +25,6 @@ class ComicsAPI {
     getAllCharacters = async () => {
         const res = await this.getResource(this.getAllCharactersUrl);
         return res.data.results.map(this._transformCharData);
-
     }
 
     getCharacter = async (id) => {
@@ -36,10 +35,12 @@ class ComicsAPI {
     _transformCharData = (char) => {
         return {
             name: char.name,
-            description: char.description || 'hidden secret information',
+            id: char.id,
+            description: char.description || 'information is classified',
             thumbnail: char.thumbnail.path + '.' + char.thumbnail.extension,
             homepage: char.urls[0].url,
-            wiki: char.urls[1].url
+            wiki: char.urls[1].url,
+            comics: char.comics.items
         }
     }
 }

@@ -1,60 +1,141 @@
 import './charInfo.scss';
-import thor from '../../resources/img/thor.jpeg';
+import { Component } from 'react';
+import ComicsAPI from '../../api/ComicsAPI';
+import { Error } from '../error/Error';
+import Preloader from '../spinner/Preloader';
+import Skeleton from '../skeleton/Skeleton';
 
-const CharInfo = () => {
+class CharInfo extends Component {
+    state = {
+        char: null,
+        isLoading: true,
+        isError: false,
+    }
+
+    server = new ComicsAPI();
+
+    updateChar = () => {
+        this.setState({
+            isLoading: false,
+            isError: false
+        })
+        const id = this.props.charId
+        // останавливаем функцию, если нет id
+        if (!id) { return }
+        this.server
+            .getCharacter(id)
+            .then(this.charLoaded)
+            .catch(this.errorCatched)
+
+        // error
+        // this.foo.bar = 0
+    }
+
+    charLoaded = (char) => {
+        this.setState({
+            // (char: char)
+            char,
+            isLoading: false
+        })
+    }
+
+    errorCatched = () => {
+        this.setState({
+            isLoading: false,
+            isError: true
+        })
+    }
+
+    componentDidMount() {
+        this.updateChar()
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (this.props.charId !== prevProps.charId) {
+            this.updateChar()
+        }
+    }
+
+    // componentDidCatch(err, info) {
+    //     console.log(err, info)
+    //     this.setState({isError: true})
+    // } устаревший метод, с версии >16 нужно использовать класс предохранитель
+
+
+
+    render() {
+        const { char, isLoading, isError } = this.state;
+
+        const skeleton = char || isError || isLoading ? null : <Skeleton />
+        const errorMessage = isError ? <Error /> : null;
+        const spinner = isLoading && <Preloader />;
+        const content = !(isLoading || isError || !char) && <View char={char} />;
+
+        return (
+            <div className="char__info">
+                {skeleton}
+                {spinner}
+                {errorMessage}
+                {content}
+            </div>
+        )
+    }
+}
+
+const View = ({ char }) => {
+    const { name, description, thumbnail, homepage, wiki, comics } = char
+    const notFoundImgLink = 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg';
+
     return (
-        <div className="char__info">
+        <>
             <div className="char__basics">
-                <img src={thor} alt="abyss"/>
+                <img src={thumbnail} alt={name} style={(thumbnail === notFoundImgLink) ? { objectFit: 'contain' } : { objectFit: 'cover' }} />
                 <div>
-                    <div className="char__info-name">thor</div>
+                    <div className="char__info-name">{name}</div>
                     <div className="char__btns">
-                        <a href="#" className="button button__main">
+                        <a href={homepage} className="button button__main">
                             <div className="inner">homepage</div>
                         </a>
-                        <a href="#" className="button button__secondary">
+                        <a href={wiki} className="button button__secondary">
                             <div className="inner">Wiki</div>
                         </a>
                     </div>
                 </div>
             </div>
             <div className="char__descr">
-                In Norse mythology, Loki is a god or jötunn (or both). Loki is the son of Fárbauti and Laufey, and the brother of Helblindi and Býleistr. By the jötunn Angrboða, Loki is the father of Hel, the wolf Fenrir, and the world serpent Jörmungandr. By Sigyn, Loki is the father of Nari and/or Narfi and with the stallion Svaðilfari as the father, Loki gave birth—in the form of a mare—to the eight-legged horse Sleipnir. In addition, Loki is referred to as the father of Váli in the Prose Edda.
+                {description}
             </div>
             <div className="char__comics">Comics:</div>
             <ul className="char__comics-list">
-                <li className="char__comics-item">
-                    All-Winners Squad: Band of Heroes (2011) #3
-                </li>
-                <li className="char__comics-item">
-                    Alpha Flight (1983) #50
-                </li>
-                <li className="char__comics-item">
-                    Amazing Spider-Man (1999) #503
-                </li>
-                <li className="char__comics-item">
-                    Amazing Spider-Man (1999) #504
-                </li>
-                <li className="char__comics-item">
-                    AMAZING SPIDER-MAN VOL. 7: BOOK OF EZEKIEL TPB (Trade Paperback)
-                </li>
-                <li className="char__comics-item">
-                    Amazing-Spider-Man: Worldwide Vol. 8 (Trade Paperback)
-                </li>
-                <li className="char__comics-item">
-                    Asgardians Of The Galaxy Vol. 2: War Of The Realms (Trade Paperback)
-                </li>
-                <li className="char__comics-item">
-                    Vengeance (2011) #4
-                </li>
-                <li className="char__comics-item">
-                    Avengers (1963) #1
-                </li>
-                <li className="char__comics-item">
-                    Avengers (1996) #1
-                </li>
+                {comics.length === 0 && <EmptyComics/>}
+                {
+                    comics.map((el, i) => {
+                        // if (i < 10) {
+                        //     return (
+                        //         <li key={i} className="char__comics-item">
+                        //             {el.name}
+                        //         </li>
+                        //     )
+                        // }
+                        if (i > 9) return;
+                        return (
+                            <li key={i} className="char__comics-item">
+                                {el.name}
+                            </li>
+                        )
+
+                    })
+                }
             </ul>
-        </div>
+        </>
+    )
+}
+
+const EmptyComics = () => {
+    return (
+        <li >
+            We don't have information about that
+        </li>
     )
 }
 
