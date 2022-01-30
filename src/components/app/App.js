@@ -2,6 +2,7 @@ import AppHeader from "../appHeader/AppHeader";
 import RandomChar from "../randomChar/RandomChar";
 import CharList from "../charList/CharList";
 import CharInfo from "../charInfo/CharInfo";
+import ErrorBoundary from "../errorBoundary/ErrorBoundary";
 
 // import ComicsAPI from "../../api/ComicsAPI"
 
@@ -22,19 +23,24 @@ class App extends Component {
         // console.log(this.state.selectedChar)
         return (
             <div className="app">
-                <AppHeader/>
+                <AppHeader />
                 <main>
-                    <RandomChar/>
+                    <ErrorBoundary>
+                        <RandomChar />
+                    </ErrorBoundary>
+
                     <div className="char__content">
-                        <CharList changeCharSelected={this.changeCharSelected}/>
-                        <CharInfo charId={this.state.selectedChar}/>
+                        <CharList changeCharSelected={this.changeCharSelected} />
+                        <ErrorBoundary>
+                            <CharInfo charId={this.state.selectedChar} />
+                        </ErrorBoundary>
                     </div>
-                    <img className="bg-decoration" src={decoration} alt="vision"/>
+                    <img className="bg-decoration" src={decoration} alt="vision" />
                 </main>
             </div>
         )
     }
-    
+
 }
 
 export default App;

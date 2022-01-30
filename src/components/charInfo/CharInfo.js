@@ -27,7 +27,7 @@ class CharInfo extends Component {
             .then(this.charLoaded)
             .catch(this.errorCatched)
 
-        // error
+        // handmade error
         // this.foo.bar = 0
     }
 
@@ -117,6 +117,7 @@ const View = ({ char }) => {
                         //         </li>
                         //     )
                         // }
+                        // eslint-disable-next-line
                         if (i > 9) return;
                         return (
                             <li key={i} className="char__comics-item">
