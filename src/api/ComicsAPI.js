@@ -7,9 +7,8 @@ class ComicsAPI {
     _apiBase = 'https://gateway.marvel.com:443/v1/public/';
     _apiKey = 'apikey=398655cdc1734b6cf20b524ab0453ef7';
     groupUrl = 'characters';    
-    limit = 'limit=9';
-    offset = 'offset=210';
-    getAllCharactersUrl = this._apiBase + this.groupUrl + '?' + this.limit + '&' + this.offset + '&' + this._apiKey; 
+    _limit = 9;
+    _offset = 210;
 
     getResource = async (url) => {
         let res = await fetch(url);
@@ -22,8 +21,8 @@ class ComicsAPI {
     // getAllCharacters = () => {
     //     return this.getResource(this.getAllCharactersUrl)
     // }
-    getAllCharacters = async () => {
-        const res = await this.getResource(this.getAllCharactersUrl);
+    getAllCharacters = async (offset = this._offset) => {
+        const res = await this.getResource(`${this._apiBase}characters?limit=${this._limit}&offset=${offset}&${this._apiKey}`);
         return res.data.results.map(this._transformCharData);
     }
 
