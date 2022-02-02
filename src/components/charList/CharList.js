@@ -114,7 +114,6 @@ class CharList extends Component {
                               }
                         }
                     }
-                    // onKeyDown={this.onKeysDown}
                     tabIndex={0}
                     >
                     {/* <img src={el.thumbnail} alt="abyss" style={(el.thumbnail === notFoundImgLink) ? {objectFit: 'contain'} : {objectFit: 'cover'}}/> */}
